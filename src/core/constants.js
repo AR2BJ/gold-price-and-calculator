@@ -1,9 +1,7 @@
 export const OZ_TROY_TO_GRAM = 31.1034768;
 export const OZ_AVOIR_TO_GRAM = 28.349523125;
 
-export const MESGHAL_SHARI = 3.456;
 export const MESGHAL_SAYRAFI = 4.6083;
-export const MESGHAL_ADI = 4.6875;
 
 export const GRAM_TO_SOOT = 1000;
 export const GRAM_TO_CARAT_WEIGHT = 5;

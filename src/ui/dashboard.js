@@ -1,7 +1,7 @@
+import { bubblePercent, theoreticalGram18 } from "../core/calculators.js";
 import { fetchLivePrices, getLastUpdateTime } from "../services/api.js";
 
 import ApexCharts from "apexcharts";
-import { bubblePercent } from "../core/calculators.js";
 import { faNum } from "./format.js";
 
 let trendChartInstance = null;
@@ -90,7 +90,7 @@ export async function renderDashboard(root, forceRefresh = false) {
   let theoreticalGold18 = null;
 
   if (prices.oz && prices.usd) {
-    theoreticalGold18 = ((prices.oz * prices.usd) / 31.1034768) * (18 / 24);
+    theoreticalGold18 = theoreticalGram18(prices.oz, prices.usd);
     if (prices.gold18) {
       goldBubble = bubblePercent(prices.gold18, theoreticalGold18);
     }

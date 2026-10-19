@@ -1,12 +1,12 @@
 import { faNum, faUnit } from "./format.js";
 import {
   fromGram,
+  karatToFineness,
   mazaneh,
   theoreticalGram24,
   toGram,
 } from "../core/calculators.js";
 
-import { PURITY_MAP } from "../core/constants.js";
 import { fetchLivePrices } from "../services/api.js";
 
 const UNITS = [
@@ -19,9 +19,8 @@ const UNITS = [
   "carat_weight",
 ];
 
-// وضعیت داخلی صفحه
 const state = {
-  purityMode: "karat", // 'karat' | 'fineness'
+  purityMode: "karat",
   karat: 18,
   value: 1,
   unit: "gram",
@@ -92,7 +91,6 @@ export async function renderConverter(root) {
                  class="mt-1 w-full border rounded-lg p-2" />
         </div>
         
-        <!-- بخش نمایش نتایج ارزش‌گذاری -->
         <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="rounded-lg bg-amber-50 border border-amber-200 p-4">
             <p class="text-sm text-gray-600">قیمت نظری هر گرم با عیار انتخابی:</p>
@@ -102,6 +100,12 @@ export async function renderConverter(root) {
             <p class="text-sm text-gray-600">قیمت مظنه (مثقال ۱۷ عیار):</p>
             <p id="valuation-mazaneh" class="text-2xl font-bold text-amber-700">—</p>
           </div>
+        </div>
+        
+        <div class="md:col-span-2 text-center text-sm text-gray-500 mt-2">
+          برای مشاهده درصد حباب و مقایسه با قیمت‌های بازار، به صفحه 
+          <a href="#" id="link-to-dashboard" class="text-blue-600 font-bold hover:underline">داشبورد</a> 
+          مراجعه کنید.
         </div>
       </div>
     </section>
@@ -158,6 +162,11 @@ function bindEvents(root, prices) {
     }
   });
 
+  $("#link-to-dashboard")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    document.querySelector("#nav-dashboard").click();
+  });
+
   root.querySelectorAll("#purity-mode-switch button").forEach((btn) => {
     btn.addEventListener("click", () => {
       state.purityMode = btn.dataset.mode;
@@ -174,12 +183,10 @@ function bindEvents(root, prices) {
 function updateAll(root) {
   const $ = (sel) => root.querySelector(sel);
 
-  // تبدیل از واحد مبدأ به گرم (یک بار)
   const gram = toGram(state.value, state.unit);
   $("#conv-hint").textContent =
     `${faNum(state.value, 4)} ${state.unit} = ${faNum(gram, 6)} گرم`;
 
-  // خروجی‌ها: از گرم به هر واحد (جلوگیری از انباشت خطا)
   const out = $("#conv-output");
   out.innerHTML = UNITS.map(
     (u) => `
@@ -190,12 +197,10 @@ function updateAll(root) {
   `,
   ).join("");
 
-  // برچسب عیار
-  const fineness = PURITY_MAP[state.karat];
+  const fineness = karatToFineness(state.karat);
   $("#purity-label").textContent =
     state.purityMode === "karat" ? `${state.karat}K` : `${faNum(fineness, 2)}‰`;
 
-  // ارزش‌گذاری (گرم و مظنه)
   if (state.oz && state.usd) {
     const fair24 = theoreticalGram24(state.oz, state.usd);
     const fairSelected = fair24 * (state.karat / 24);
