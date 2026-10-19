@@ -47,7 +47,9 @@ export function theoreticalGram24(ozUsd, usdRate) {
 }
 
 export function theoreticalGram18(ozUsd, usdRate) {
-  return theoreticalGram24(ozUsd, usdRate) * (18 / 24);
+  return (
+    theoreticalGram24(ozUsd, usdRate) * (C.PURITY_MAP[18] / C.PURITY_MAP[24])
+  );
 }
 
 export function mazaneh(ozUsd, usdRate) {
@@ -60,5 +62,5 @@ export function bubblePercent(marketPrice, fairPrice) {
 }
 
 export function karatToFineness(k) {
-  return (k / 24) * 1000;
+  return (C.PURITY_MAP[k] / C.PURITY_MAP[24]) * 1000;
 }

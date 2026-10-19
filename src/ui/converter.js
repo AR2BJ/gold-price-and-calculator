@@ -7,6 +7,7 @@ import {
 } from "../core/calculators.js";
 
 import { PURITY_MAP } from "../core/constants.js";
+import { fetchLivePrices } from "../services/api.js";
 
 const UNITS = [
   "gram",
@@ -28,7 +29,9 @@ const state = {
   usd: null,
 };
 
-export function renderConverter(root) {
+export async function renderConverter(root) {
+  const prices = await fetchLivePrices();
+
   root.innerHTML = `
     <section class="max-w-5xl mx-auto p-4 space-y-6">
       <header class="flex items-center justify-between">
@@ -72,16 +75,22 @@ export function renderConverter(root) {
       </div>
 
       <div class="bg-white rounded-xl shadow-sm border p-4 grid gap-4 md:grid-cols-2">
-        <label class="block">
-          <span class="text-sm text-gray-600">قیمت اونس (USD)</span>
-          <input id="oz-price" type="number" step="any" placeholder="مثلاً 2000"
+        <div class="block">
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-gray-600">قیمت اونس (USD)</span>
+            <button type="button" id="reset-oz" class="text-xs text-blue-500 hover:underline">بازنشانی به قیمت روز</button>
+          </div>
+          <input id="oz-price" type="number" step="any" placeholder="مثلاً 2000" value="${prices?.oz ?? ""}"
                  class="mt-1 w-full border rounded-lg p-2" />
-        </label>
-        <label class="block">
-          <span class="text-sm text-gray-600">نرخ دلار (تومان)</span>
-          <input id="usd-rate" type="number" step="any" placeholder="مثلاً 60000"
+        </div>
+        <div class="block">
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-gray-600">نرخ دلار (تومان)</span>
+            <button type="button" id="reset-usd" class="text-xs text-blue-500 hover:underline">بازنشانی به قیمت روز</button>
+          </div>
+          <input id="usd-rate" type="number" step="any" placeholder="مثلاً 60000" value="${prices?.usd ?? ""}"
                  class="mt-1 w-full border rounded-lg p-2" />
-        </label>
+        </div>
         
         <!-- بخش نمایش نتایج ارزش‌گذاری -->
         <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -98,11 +107,14 @@ export function renderConverter(root) {
     </section>
   `;
 
-  bindEvents(root);
+  if (prices?.oz) state.oz = prices.oz;
+  if (prices?.usd) state.usd = prices.usd;
+
+  bindEvents(root, prices);
   updateAll(root);
 }
 
-function bindEvents(root) {
+function bindEvents(root, prices) {
   const $ = (sel) => root.querySelector(sel);
 
   $("#conv-value").addEventListener("input", (e) => {
@@ -128,6 +140,22 @@ function bindEvents(root) {
   $("#usd-rate").addEventListener("input", (e) => {
     state.usd = parseFloat(e.target.value) || null;
     updateAll(root);
+  });
+
+  $("#reset-oz")?.addEventListener("click", () => {
+    if (prices?.oz) {
+      state.oz = prices.oz;
+      $("#oz-price").value = prices.oz;
+      updateAll(root);
+    }
+  });
+
+  $("#reset-usd")?.addEventListener("click", () => {
+    if (prices?.usd) {
+      state.usd = prices.usd;
+      $("#usd-rate").value = prices.usd;
+      updateAll(root);
+    }
   });
 
   root.querySelectorAll("#purity-mode-switch button").forEach((btn) => {
