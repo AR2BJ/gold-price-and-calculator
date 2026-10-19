@@ -1,0 +1,69 @@
+@font-face {
+  font-family: "IranYekanRegular";
+
+  src: url("../font/iran_yekan/eot/IRANYekanFN-Regular.eot");
+
+  src:
+    local("IRANYekanFN-Regular"),
+    url("../font/iran_yekan/eot/IRANYekanFN-Regular.eot?#iefix")
+      format("embedded-opentype"),
+    url("../font/iran_yekan/woff2/IRANYekanFN-Regular.woff2") format("woff2"),
+    url("../font/iran_yekan/woff/IRANYekanFN-Regular.woff") format("woff"),
+    url("../font/iran_yekan/ttf/IRANYekanFN-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range:
+    U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFE;
+}
+
+@font-face {
+  font-family: "Roboto Condensed";
+  src: url("../font/roboto_condensed/eot/RobotoCondensed-Black.eot");
+  src:
+    url("../font/roboto_condensed/eot/RobotoCondensed-Black.eot?#iefix")
+      format("embedded-opentype"),
+    url("../font/roboto_condensed/woff2/RobotoCondensed-Black.woff2")
+      format("woff2"),
+    url("../font/roboto_condensed/woff/RobotoCondensed-Black.woff")
+      format("woff"),
+    url("../font/roboto_condensed/ttf/RobotoCondensed-Black.ttf")
+      format("truetype");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Roboto Condensed";
+  src: url("../font/roboto_condensed/eot/RobotoCondensed-Bold.eot");
+  src:
+    url("../font/roboto_condensed/eot/RobotoCondensed-Bold.eot?#iefix")
+      format("embedded-opentype"),
+    url("../font/roboto_condensed/woff2/RobotoCondensed-Bold.woff2")
+      format("woff2"),
+    url("../font/roboto_condensed/woff/RobotoCondensed-Bold.woff")
+      format("woff"),
+    url("../font/roboto_condensed/ttf/RobotoCondensed-Bold.ttf")
+      format("truetype");
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Roboto Condensed";
+  src: url("../font/roboto_condensed/eot/RobotoCondensed-Regular.eot");
+  src:
+    url("../font/roboto_condensed/eot/RobotoCondensed-Regular.eot?#iefix")
+      format("embedded-opentype"),
+    url("../font/roboto_condensed/woff2/RobotoCondensed-Regular.woff2")
+      format("woff2"),
+    url("../font/roboto_condensed/woff/RobotoCondensed-Regular.woff")
+      format("woff"),
+    url("../font/roboto_condensed/ttf/RobotoCondensed-Regular.ttf")
+      format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
