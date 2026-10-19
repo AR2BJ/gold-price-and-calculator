@@ -1,6 +1,165 @@
 @import "tailwindcss";
 @import "./font.css";
 
+@theme {
+  --color-bg: #030712;
+  --color-surface: #111827;
+  --color-surface-2: #1f2937;
+  --color-surface-3: #2e3f5e;
+  --color-surface-4: #40567e;
+  --color-primary: #ffffff;
+  --color-secondary: #94a3b8;
+  --color-tertiary: #64748b;
+  --color-inverse: #ffffff;
+  --color-border: #374151;
+  --color-brand: #4f46e5;
+  --breakpoint-xs: 23.4375rem;
+}
+
+/* ============================================ */
+/* DARK THEME - OPTIMIZED FOR HIGH CONTRAST    */
+/* ============================================ */
+.dark {
+  /* ===== BASE BACKGROUNDS ===== */
+  --color-bg: #0b0f19;
+  --color-surface: #161f30;
+  --color-surface-2: #222f47;
+  --color-surface-3: #2e3f5e;
+  --color-surface-4: #40567e;
+
+  /* ===== TEXT COLORS ===== */
+  --color-primary: #ffffff;
+  --color-secondary: #94a3b8;
+  --color-tertiary: #64748b;
+  --color-inverse: #ffffff;
+
+  /* ===== BORDERS & DIVIDERS ===== */
+  --color-border: #2e3f5e;
+  --color-border-light: #1e293b;
+  --color-border-strong: #475569;
+
+  /* ===== BRAND & ACTIONS ===== */
+  --color-brand: #6366f1;
+  --color-brand-hover: #818cf8;
+  --color-brand-active: #a5b4fc;
+  --color-brand-light: rgba(99, 102, 241, 0.15);
+
+  /* ===== BUTTONS ===== */
+  --color-btn-primary-bg: #6366f1;
+  --color-btn-primary-text: #ffffff;
+  --color-btn-primary-hover: #818cf8;
+  --color-btn-primary-active: #a5b4fc;
+
+  --color-btn-secondary-bg: #222f47;
+  --color-btn-secondary-text: #f8fafc;
+  --color-btn-secondary-border: #2e3f5e;
+  --color-btn-secondary-hover: #2e3f5e;
+  --color-btn-secondary-active: #384f76;
+
+  /* ===== STATES ===== */
+  --color-hover: #1e293b;
+  --color-active: #2e3f5e;
+  --color-focus-ring: #6366f1;
+  --color-disabled: #1e293b;
+  --color-disabled-text: #475569;
+
+  /* ===== SUCCESS / ERROR / WARNING ===== */
+  --color-success: #10b981;
+  --color-success-light: rgba(16, 185, 129, 0.15);
+  --color-error: #ef4444;
+  --color-error-light: rgba(239, 68, 68, 0.15);
+  --color-warning: #f59e0b;
+  --color-warning-light: rgba(245, 158, 11, 0.15);
+
+  /* ===== SHADOWS ===== */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.5);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.5);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.6);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.7);
+
+  .apexcharts-legend-text {
+    color: #e2e8f0 !important;
+  }
+
+  .text-color {
+    color: var(--color-primary);
+  }
+}
+
+/* ============================================ */
+/* LIGHT THEME - MAX READABILITY & PREMIUM UI   */
+/* ============================================ */
+.light {
+  /* ===== BASE BACKGROUNDS ===== */
+  --color-bg: #f1f5f9;
+  --color-surface: #ffffff;
+  --color-surface-2: #f1f4f7;
+  --color-surface-3: #e2e8f0;
+  --color-surface-4: #d2d8df;
+
+  /* ===== TEXT COLORS ===== */
+  --color-primary: #0f172a;
+  --color-secondary: #475569;
+  --color-tertiary: #64748b;
+  --color-inverse: #ffffff;
+
+  /* ===== BORDERS & DIVIDERS ===== */
+  --color-border: #cbd5e1;
+  --color-border-light: #e2e8f0;
+  --color-border-strong: #94a3b8;
+
+  /* ===== BRAND & ACTIONS ===== */
+  --color-brand: #4f46e5;
+  --color-brand-hover: #4338ca;
+  --color-brand-active: #3730a3;
+  --color-brand-light: #eef2ff;
+
+  /* ===== BUTTONS ===== */
+  --color-btn-primary-bg: #4f46e5;
+  --color-btn-primary-text: #ffffff;
+  --color-btn-primary-hover: #4338ca;
+  --color-btn-primary-active: #3730a3;
+
+  --color-btn-secondary-bg: #ffffff;
+  --color-btn-secondary-text: #0f172a;
+  --color-btn-secondary-border: #cbd5e1;
+  --color-btn-secondary-hover: #f8fafc;
+  --color-btn-secondary-active: #f1f5f9;
+
+  --color-btn-ghost-text: #475569;
+  --color-btn-ghost-hover: #f1f5f9;
+  --color-btn-ghost-active: #e2e8f0;
+
+  /* ===== STATES ===== */
+  --color-hover: #f8fafc;
+  --color-active: #f1f5f9;
+  --color-focus-ring: #4f46e5;
+  --color-disabled: #f1f5f9;
+  --color-disabled-text: #94a3b8;
+
+  /* ===== SUCCESS / ERROR / WARNING ===== */
+  --color-success: #10b981;
+  --color-success-light: #d1fae5;
+  --color-error: #ef4444;
+  --color-error-light: #fee2e2;
+  --color-warning: #f59e0b;
+  --color-warning-light: #fed7aa;
+
+  /* ===== SHADOWS ===== */
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 4px 12px -2px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 12px 24px -4px rgba(15, 23, 42, 0.12);
+  --shadow-xl: 0 24px 36px -6px rgba(15, 23, 42, 0.15);
+
+  .apexcharts-legend-text {
+    color: #161f30 !important;
+  }
+
+  .text-color {
+    color: var(--color-secondary);
+  }
+}
+
 body {
   min-height: 100dvh;
   display: flex;
@@ -11,4 +170,51 @@ body {
     background 0.3s ease,
     color 0.3s ease,
     border-color 0.3s ease;
+}
+
+input,
+select,
+textarea {
+  font-family: "Roboto Condensed", "IranYekanRegular", sans-serif;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  appearance: textfield;
+}
+
+.custom-range {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 8px;
+  border-radius: 4px;
+  outline: none;
+}
+.custom-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-surface);
+  border: 3px solid var(--color-brand);
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: transform 0.1s;
+}
+.custom-range::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+.custom-range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-surface);
+  border: 3px solid var(--color-brand);
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }

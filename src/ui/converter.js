@@ -7,16 +7,25 @@ import {
   toGram,
 } from "../core/calculators.js";
 
+import { AutocompleteComponent } from "../components/ui/autocomplete.component.js";
 import { fetchLivePrices } from "../services/api.js";
 
-const UNITS = [
-  "gram",
-  "oz_troy",
-  "oz_avoir",
-  "mesghal",
-  "mazaneh",
-  "soot",
-  "carat_weight",
+const UNIT_ITEMS = [
+  { title: "گرم (Gram)", value: "gram", icon: "ti ti-weight" },
+  { title: "اونس تروآ (Troy Oz)", value: "oz_troy", icon: "ti ti-scale" },
+  {
+    title: "اونس معمولی (Avoir Oz)",
+    value: "oz_avoir",
+    icon: "ti ti-scale-outline",
+  },
+  {
+    title: "مثقال صیرفی (Mesghal)",
+    value: "mesghal",
+    icon: "ti ti-building-bank",
+  },
+  { title: "مظنه (Mazaneh)", value: "mazaneh", icon: "ti ti-chart-bar" },
+  { title: "سوت (Soot)", value: "soot", icon: "ti ti-dots" },
+  { title: "قیراط (Carat)", value: "carat_weight", icon: "ti ti-diamond" },
 ];
 
 const state = {
@@ -32,79 +41,195 @@ export async function renderConverter(root) {
   const prices = await fetchLivePrices();
 
   root.innerHTML = `
-    <section class="max-w-5xl mx-auto p-4 space-y-6">
-      <header class="flex items-center justify-between">
-        <h2 class="text-xl font-bold">تبدیل واحد طلا</h2>
-        <div class="inline-flex rounded-lg border overflow-hidden" id="purity-mode-switch">
-          <button data-mode="karat" class="px-4 py-1.5 bg-blue-600 text-white">عیار</button>
-          <button data-mode="fineness" class="px-4 py-1.5">خلوص</button>
+    <section
+      class="max-w-6xl mx-auto p-4 space-y-6"
+      dir="rtl"
+    >
+      <header
+        class="flex items-center justify-between bg-surface p-5 rounded-2xl shadow-sm border border-border"
+      >
+        <div class="flex items-center gap-3">
+          <div class="bg-brand/10 text-brand p-2.5 rounded-xl">
+            <i class="ti ti-arrows-exchange text-2xl"></i>
+          </div>
+          <h2 class="text-xl font-bold text-primary">تبدیل واحد طلا</h2>
+        </div>
+        <div
+          class="inline-flex rounded-xl border border-border bg-surface-2 p-1"
+          id="purity-mode-switch"
+        >
+          <button
+            data-mode="karat"
+            class="px-4 py-1.5 rounded-lg bg-surface shadow-sm text-brand font-bold text-sm cursor-pointer transition-all"
+          >
+            عیار
+          </button>
+          <button
+            data-mode="fineness"
+            class="px-4 py-1.5 rounded-lg text-secondary font-medium text-sm cursor-pointer hover:text-primary transition-all"
+          >
+            خلوص
+          </button>
         </div>
       </header>
 
-      <div class="bg-white rounded-xl shadow-sm border p-4 grid gap-4 md:grid-cols-2">
+      <div
+        class="bg-surface rounded-2xl shadow-sm border border-border p-6 grid gap-6 md:grid-cols-2"
+      >
         <label class="block">
-          <span class="text-sm text-gray-600">مقدار</span>
-          <input id="conv-value" type="number" value="1" min="0" step="any"
-                 class="mt-1 w-full border rounded-lg p-2" />
+          <span class="text-sm font-semibold text-secondary mb-2 block"
+            >مقدار</span
+          >
+          <div class="relative">
+            <input
+              id="conv-value"
+              type="number"
+              value="1"
+              min="0"
+              step="any"
+              class="w-full border border-border rounded-xl p-3 ps-10 bg-surface-2 focus:bg-surface focus:ring-2 focus:ring-brand/30 focus:border-brand transition-all outline-none text-primary font-medium"
+            />
+            <i
+              class="ti ti-math-function absolute left-3 top-1/2 -translate-y-1/2 text-secondary text-lg"
+            ></i>
+          </div>
         </label>
-        <label class="block">
-          <span class="text-sm text-gray-600">واحد مبدأ</span>
-          <select id="conv-unit" class="mt-1 w-full border rounded-lg p-2">
-            <option value="gram">گرم</option>
-            <option value="oz_troy">اونس تروآ</option>
-            <option value="oz_avoir">اونس معمولی</option>
-            <option value="mesghal">مثقال صیرفی</option>
-            <option value="mazaneh">مظنه</option>
-            <option value="soot">سوت</option>
-            <option value="carat_weight">قیراط (وزن)</option>
-          </select>
-        </label>
-        <p id="conv-hint" class="md:col-span-2 text-xs text-gray-500"></p>
+
+        <div class="block">
+          <span class="text-sm font-semibold text-secondary mb-2 block"
+            >واحد مبدأ</span
+          >
+          <div id="unit-autocomplete-container"></div>
+        </div>
+
+        <div
+          class="md:col-span-2 bg-brand-light text-brand p-3 rounded-xl text-sm flex items-center gap-2 border border-brand/20"
+        >
+          <i class="ti ti-info-circle text-lg"></i>
+          <p id="conv-hint"></p>
+        </div>
       </div>
 
-      <div id="conv-output" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"></div>
+      <div
+        id="conv-output"
+        class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+      ></div>
 
-      <div class="bg-white rounded-xl shadow-sm border p-4">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-sm text-gray-600">عیار</span>
-          <span id="purity-label" class="font-bold text-amber-600">۱۸K</span>
+      <div class="bg-surface rounded-2xl shadow-sm border border-border p-6">
+        <div class="flex items-center justify-between mb-4">
+          <span
+            id="range-title"
+            class="text-sm font-semibold text-secondary"
+            >عیار</span
+          >
+          <span
+            id="purity-label"
+            class="font-bold text-brand text-lg"
+            >۱۸K</span
+          >
         </div>
-        <input id="purity-range" type="range" min="8" max="24" step="1" value="18"
-               class="w-full accent-amber-600" />
+        <input
+          id="purity-range"
+          type="range"
+          min="8"
+          max="24"
+          step="1"
+          value="18"
+          class="w-full custom-range"
+        />
       </div>
 
-      <div class="bg-white rounded-xl shadow-sm border p-4 grid gap-4 md:grid-cols-2">
+      <div
+        class="bg-surface rounded-2xl shadow-sm border border-border p-6 grid gap-6 md:grid-cols-2"
+      >
         <div class="block">
-          <div class="flex justify-between items-center">
-            <span class="text-sm text-gray-600">قیمت اونس (USD)</span>
-            <button type="button" id="reset-oz" class="text-xs text-blue-500 hover:underline">بازنشانی به قیمت روز</button>
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-sm font-semibold text-secondary"
+              >قیمت اونس (USD)</span
+            >
+            <button
+              type="button"
+              id="reset-oz"
+              class="text-xs text-brand bg-brand/10 px-2 py-1 rounded-md hover:bg-brand/20 transition cursor-pointer flex items-center gap-1"
+            >
+              <i class="ti ti-refresh text-sm"></i> بازنشانی
+            </button>
           </div>
-          <input id="oz-price" type="number" step="any" placeholder="مثلاً 2000" value="${prices?.oz ?? ""}"
-                 class="mt-1 w-full border rounded-lg p-2" />
+          <input
+            id="oz-price"
+            type="number"
+            step="any"
+            placeholder="مثلاً 2000"
+            value="${prices?.oz ?? ""}"
+            class="w-full border border-border rounded-xl p-3 bg-surface-2 focus:bg-surface focus:ring-2 focus:ring-brand/30 focus:border-brand transition-all outline-none text-primary font-medium"
+          />
         </div>
+
         <div class="block">
-          <div class="flex justify-between items-center">
-            <span class="text-sm text-gray-600">نرخ دلار (تومان)</span>
-            <button type="button" id="reset-usd" class="text-xs text-blue-500 hover:underline">بازنشانی به قیمت روز</button>
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-sm font-semibold text-secondary"
+              >نرخ دلار (تومان)</span
+            >
+            <button
+              type="button"
+              id="reset-usd"
+              class="text-xs text-brand bg-brand/10 px-2 py-1 rounded-md hover:bg-brand/20 transition cursor-pointer flex items-center gap-1"
+            >
+              <i class="ti ti-refresh text-sm"></i> بازنشانی
+            </button>
           </div>
-          <input id="usd-rate" type="number" step="any" placeholder="مثلاً 60000" value="${prices?.usd ?? ""}"
-                 class="mt-1 w-full border rounded-lg p-2" />
+          <input
+            id="usd-rate"
+            type="number"
+            step="any"
+            placeholder="مثلاً 60000"
+            value="${prices?.usd ?? ""}"
+            class="w-full border border-border rounded-xl p-3 bg-surface-2 focus:bg-surface focus:ring-2 focus:ring-brand/30 focus:border-brand transition-all outline-none text-primary font-medium"
+          />
         </div>
-        
-        <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="rounded-lg bg-amber-50 border border-amber-200 p-4">
-            <p class="text-sm text-gray-600">قیمت نظری هر گرم با عیار انتخابی:</p>
-            <p id="valuation-gram" class="text-2xl font-bold text-amber-700">—</p>
+
+        <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+          <div
+            class="rounded-xl bg-surface-2 border border-border p-5 shadow-sm relative overflow-hidden"
+          >
+            <div class="absolute top-0 right-0 w-1 h-full bg-amber-500"></div>
+            <p class="text-sm font-medium text-secondary mb-1">
+              قیمت نظری هر گرم با عیار انتخابی:
+            </p>
+            <p
+              id="valuation-gram"
+              class="text-2xl font-bold text-primary"
+            >
+              —
+            </p>
           </div>
-          <div class="rounded-lg bg-amber-50 border border-amber-200 p-4">
-            <p class="text-sm text-gray-600">قیمت مظنه (مثقال ۱۷ عیار):</p>
-            <p id="valuation-mazaneh" class="text-2xl font-bold text-amber-700">—</p>
+          <div
+            class="rounded-xl bg-surface-2 border border-border p-5 shadow-sm relative overflow-hidden"
+          >
+            <div class="absolute top-0 right-0 w-1 h-full bg-purple-500"></div>
+            <p class="text-sm font-medium text-secondary mb-1">
+              قیمت مظنه (مثقال ۱۷ عیار):
+            </p>
+            <p
+              id="valuation-mazaneh"
+              class="text-2xl font-bold text-primary"
+            >
+              —
+            </p>
           </div>
         </div>
-        
-        <div class="md:col-span-2 text-center text-sm text-gray-500 mt-2">
-          برای مشاهده درصد حباب و مقایسه با قیمت‌های بازار، به صفحه 
-          <a href="#" id="link-to-dashboard" class="text-blue-600 font-bold hover:underline">داشبورد</a> 
+
+        <div
+          class="md:col-span-2 text-center text-sm text-secondary mt-2 bg-surface-2 p-3 rounded-xl border border-border"
+        >
+          <i class="ti ti-info-circle text-brand"></i>
+          برای مشاهده درصد حباب و مقایسه با قیمت‌های بازار، به صفحه
+          <a
+            href="#"
+            id="link-to-dashboard"
+            class="text-brand font-bold hover:underline"
+            >داشبورد</a
+          >
           مراجعه کنید.
         </div>
       </div>
@@ -114,20 +239,38 @@ export async function renderConverter(root) {
   if (prices?.oz) state.oz = prices.oz;
   if (prices?.usd) state.usd = prices.usd;
 
-  bindEvents(root, prices);
+  const unitAutocomplete = new AutocompleteComponent(
+    "unit-autocomplete-container",
+    UNIT_ITEMS,
+    {
+      placeholder: "جستجوی واحد...",
+      itemTitle: "title",
+      itemValue: "value",
+      itemIcon: "icon",
+      clearable: false,
+      label: "",
+      containerClass:
+        "border border-border rounded-xl bg-surface-2 text-primary font-medium focus-within:ring-2 focus-within:ring-brand/30 focus-within:border-brand transition-all",
+      inputClass: "text-primary bg-transparent",
+    },
+  );
+
+  unitAutocomplete.setValue(state.unit);
+
+  unitAutocomplete.onChange((value) => {
+    state.unit = value;
+    updateAll(root);
+  });
+
+  bindEvents(root, prices, unitAutocomplete);
   updateAll(root);
 }
 
-function bindEvents(root, prices) {
+function bindEvents(root, prices, unitAutocomplete) {
   const $ = (sel) => root.querySelector(sel);
 
   $("#conv-value").addEventListener("input", (e) => {
     state.value = parseFloat(e.target.value) || 0;
-    updateAll(root);
-  });
-
-  $("#conv-unit").addEventListener("change", (e) => {
-    state.unit = e.target.value;
     updateAll(root);
   });
 
@@ -170,11 +313,19 @@ function bindEvents(root, prices) {
   root.querySelectorAll("#purity-mode-switch button").forEach((btn) => {
     btn.addEventListener("click", () => {
       state.purityMode = btn.dataset.mode;
+
       root.querySelectorAll("#purity-mode-switch button").forEach((b) => {
         const active = b.dataset.mode === state.purityMode;
-        b.classList.toggle("bg-blue-600", active);
-        b.classList.toggle("text-white", active);
+        b.className = active
+          ? "px-4 py-1.5 rounded-lg bg-surface shadow-sm text-brand font-bold text-sm cursor-pointer transition-all"
+          : "px-4 py-1.5 rounded-lg text-secondary font-medium text-sm cursor-pointer hover:text-primary transition-all";
       });
+
+      const rangeTitle = $("#range-title");
+      if (rangeTitle) {
+        rangeTitle.textContent =
+          state.purityMode === "karat" ? "عیار" : "خلوص (در هزار)";
+      }
       updateAll(root);
     });
   });
@@ -184,22 +335,52 @@ function updateAll(root) {
   const $ = (sel) => root.querySelector(sel);
 
   const gram = toGram(state.value, state.unit);
+
+  const selectedUnit = UNIT_ITEMS.find((u) => u.value === state.unit);
+  const unitName = selectedUnit ? selectedUnit.title : state.unit;
+
   $("#conv-hint").textContent =
-    `${faNum(state.value, 4)} ${state.unit} = ${faNum(gram, 6)} گرم`;
+    `${faNum(state.value, 4)} ${unitName} = ${faNum(gram, 6)} گرم`;
 
   const out = $("#conv-output");
-  out.innerHTML = UNITS.map(
-    (u) => `
-    <div class="bg-white rounded-xl shadow-sm border p-3">
-      <div class="text-xs text-gray-500">${labelOf(u)}</div>
-      <div class="text-lg font-bold text-gray-800">${faUnit(fromGram(gram, u), u)}</div>
-    </div>
-  `,
-  ).join("");
+  out.innerHTML = UNIT_ITEMS.map((item) => {
+    if (item.value === state.unit) return "";
+
+    return `
+      <div class="bg-surface rounded-xl shadow-sm border border-border p-4 flex items-center gap-4 hover:shadow-md transition-shadow group">
+        <div class="bg-surface-2 text-secondary p-3 rounded-lg group-hover:bg-brand/10 group-hover:text-brand transition-colors">
+          <i class="${item.icon} text-xl"></i>
+        </div>
+        <div>
+          <div class="text-xs font-medium text-secondary mb-0.5">${item.title}</div>
+          <div class="text-lg font-bold text-color">${faUnit(fromGram(gram, item.value), item.value)}</div>
+        </div>
+      </div>
+    `;
+  }).join("");
 
   const fineness = karatToFineness(state.karat);
-  $("#purity-label").textContent =
-    state.purityMode === "karat" ? `${state.karat}K` : `${faNum(fineness, 2)}‰`;
+  const purityLabel = $("#purity-label");
+  const purityRange = $("#purity-range");
+
+  if (purityLabel) {
+    purityLabel.textContent =
+      state.purityMode === "karat"
+        ? `${state.karat}K`
+        : `${faNum(fineness, 2)}‰`;
+  }
+
+  if (purityRange) {
+    const min = 8;
+    const max = 24;
+    const value = state.karat;
+    const percentage = ((value - min) / (max - min)) * 100;
+
+    const fillColor = "#4f46e5";
+
+    purityRange.style.background = `linear-gradient(to left, ${fillColor} ${percentage}%, var(--color-surface-3) ${percentage}%)`;
+    purityRange.style.setProperty("--tw-ring-color", fillColor);
+  }
 
   if (state.oz && state.usd) {
     const fair24 = theoreticalGram24(state.oz, state.usd);
@@ -212,18 +393,4 @@ function updateAll(root) {
     $("#valuation-gram").textContent = "—";
     $("#valuation-mazaneh").textContent = "—";
   }
-}
-
-function labelOf(unit) {
-  return (
-    {
-      gram: "گرم",
-      oz_troy: "اونس تروآ",
-      oz_avoir: "اونس معمولی",
-      mesghal: "مثقال صیرفی",
-      mazaneh: "مظنه",
-      soot: "سوت",
-      carat_weight: "قیراط (وزن)",
-    }[unit] ?? unit
-  );
 }
