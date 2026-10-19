@@ -1,4 +1,4 @@
-import { faNum, faUnit } from "./format.js";
+import { faNum, faUnit, formatNumberField, toEnDigits } from "./format.js";
 import {
   fromGram,
   karatToFineness,
@@ -37,6 +37,25 @@ const state = {
   usd: null,
 };
 
+function handleInputFormat(e, callback) {
+  const input = e.target;
+  const cursorPos = input.selectionStart;
+  const oldValue = input.value;
+
+  let rawValue = oldValue.replace(/[^0-9۰-۹٠-٩.,٫]/g, "");
+
+  const formatted = formatNumberField(rawValue);
+
+  if (input.value !== formatted) {
+    input.value = formatted;
+    const diff = formatted.length - oldValue.length;
+    const newPos = Math.max(0, cursorPos + diff);
+    input.setSelectionRange(newPos, newPos);
+  }
+
+  if (callback) callback();
+}
+
 export async function renderConverter(root) {
   const prices = await fetchLivePrices();
 
@@ -49,7 +68,9 @@ export async function renderConverter(root) {
         class="flex items-center justify-between bg-surface p-5 rounded-2xl shadow-sm border border-border"
       >
         <div class="flex items-center gap-3">
-          <div class="bg-brand/10 text-brand p-2.5 rounded-xl flex items-center">
+          <div
+            class="bg-brand/10 text-brand p-2.5 rounded-xl flex items-center"
+          >
             <i class="ti ti-arrows-exchange text-2xl"></i>
           </div>
           <h2 class="text-xl font-bold text-primary">تبدیل واحد طلا</h2>
@@ -77,17 +98,17 @@ export async function renderConverter(root) {
         class="bg-surface rounded-2xl shadow-sm border border-border p-6 grid gap-6 md:grid-cols-2"
       >
         <label class="block">
-          <span class="mb-1.5 ps-3 flex flex-row text-xs font-semibold text-secondary"
+          <span
+            class="mb-1.5 ps-3 flex flex-row text-xs font-semibold text-secondary"
             >مقدار</span
           >
           <div class="relative">
             <input
               id="conv-value"
-              type="number"
+              type="text"
+              inputmode="numeric"
               value="1"
-              min="0"
-              step="any"
-              class="h-11 w-full border border-border rounded-xl p-1.75 ps-10 bg-surface-2 focus:ring-2 focus:ring-brand/30 focus:border-brand transition-all outline-none text-primary font-medium"
+              class="h-11 w-full border border-border rounded-xl p-1.75 ps-10 bg-surface-2 focus:ring-2 focus:ring-brand/30 focus:border-brand transition-all outline-none text-primary font-medium font-['IranYekanRegular']"
             />
             <i
               class="ti ti-math-function absolute right-3 top-1/2 -translate-y-1/2 text-secondary text-lg"
@@ -140,49 +161,53 @@ export async function renderConverter(root) {
         class="bg-surface rounded-2xl shadow-sm border border-border p-6 grid gap-6 md:grid-cols-2"
       >
         <div class="block">
-          <div class="flex justify-between items-center mb-2">
-            <span class="text-sm font-semibold text-secondary"
-              >قیمت اونس (USD)</span
-            >
+          <span
+            class="mb-1.5 ps-3 flex flex-row text-xs font-semibold text-secondary"
+            >قیمت اونس (USD)</span
+          >
+          <div class="relative">
+            <input
+              id="oz-price"
+              type="text"
+              inputmode="decimal"
+              placeholder="مثلاً ۲۰۰۰"
+              value="${prices?.oz ? formatNumberField(prices.oz) : ""}"
+              class="h-11 w-full border border-border rounded-xl pe-14 ps-3 bg-surface-2 focus:ring-2 focus:ring-brand/30 focus:border-brand transition-all outline-none text-primary font-medium font-['IranYekanRegular']"
+            />
             <button
               type="button"
               id="reset-oz"
-              class="text-xs text-brand bg-brand/10 px-2 py-1 rounded-md hover:bg-brand/20 transition cursor-pointer flex items-center gap-1"
+              class="absolute left-0 top-0 h-full w-12 bg-brand/10 text-brand hover:bg-brand/20 transition-colors cursor-pointer flex items-center justify-center rounded-l-xl border-r border-border"
+              title="بازنشانی به قیمت روز"
             >
-              <i class="ti ti-refresh text-sm"></i> بازنشانی
+              <i class="ti ti-refresh text-lg"></i>
             </button>
           </div>
-          <input
-            id="oz-price"
-            type="number"
-            step="any"
-            placeholder="مثلاً 2000"
-            value="${prices?.oz ?? ""}"
-            class="w-full border border-border rounded-xl p-3 bg-surface-2 focus:bg-surface focus:ring-2 focus:ring-brand/30 focus:border-brand transition-all outline-none text-primary font-medium"
-          />
         </div>
 
         <div class="block">
-          <div class="flex justify-between items-center mb-2">
-            <span class="text-sm font-semibold text-secondary"
-              >نرخ دلار (تومان)</span
-            >
+          <span
+            class="mb-1.5 ps-3 flex flex-row text-xs font-semibold text-secondary"
+            >نرخ دلار (ریال)</span
+          >
+          <div class="relative">
+            <input
+              id="usd-rate"
+              type="text"
+              inputmode="numeric"
+              placeholder="مثلاً ۶۰۰,۰۰۰"
+              value="${prices?.usd ? formatNumberField(prices.usd) : ""}"
+              class="h-11 w-full border border-border rounded-xl pe-14 ps-3 bg-surface-2 focus:ring-2 focus:ring-brand/30 focus:border-brand transition-all outline-none text-primary font-medium font-['IranYekanRegular']"
+            />
             <button
               type="button"
               id="reset-usd"
-              class="text-xs text-brand bg-brand/10 px-2 py-1 rounded-md hover:bg-brand/20 transition cursor-pointer flex items-center gap-1"
+              class="absolute left-0 top-0 h-full w-12 bg-brand/10 text-brand hover:bg-brand/20 transition-colors cursor-pointer flex items-center justify-center rounded-l-xl border-r border-border"
+              title="بازنشانی به قیمت روز"
             >
-              <i class="ti ti-refresh text-sm"></i> بازنشانی
+              <i class="ti ti-refresh text-lg"></i>
             </button>
           </div>
-          <input
-            id="usd-rate"
-            type="number"
-            step="any"
-            placeholder="مثلاً 60000"
-            value="${prices?.usd ?? ""}"
-            class="w-full border border-border rounded-xl p-3 bg-surface-2 focus:bg-surface focus:ring-2 focus:ring-brand/30 focus:border-brand transition-all outline-none text-primary font-medium"
-          />
         </div>
 
         <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
@@ -203,7 +228,7 @@ export async function renderConverter(root) {
           <div
             class="rounded-xl bg-surface-2 border border-border p-5 shadow-sm relative overflow-hidden"
           >
-            <div class="absolute top-0 right-0 w-1 h-full bg-purple-500"></div>
+            <div class="absolute top-0 right-0 w-1 h-full bg-sky-500"></div>
             <p class="text-sm font-medium text-secondary mb-1">
               قیمت مظنه (۱ مثقال طلای ۱۷ عیار):
             </p>
@@ -253,7 +278,6 @@ export async function renderConverter(root) {
   );
 
   unitAutocomplete.setValue(state.unit);
-
   unitAutocomplete.onChange((value) => {
     state.unit = value;
     updateAll(root);
@@ -263,12 +287,37 @@ export async function renderConverter(root) {
   updateAll(root);
 }
 
-function bindEvents(root, prices, unitAutocomplete) {
+function bindEvents(root, prices) {
   const $ = (sel) => root.querySelector(sel);
 
   $("#conv-value").addEventListener("input", (e) => {
-    state.value = parseFloat(e.target.value) || 0;
-    updateAll(root);
+    handleInputFormat(e, () => {
+      const cleanVal = toEnDigits(e.target.value)
+        .replace(/,/g, "")
+        .replace(/٫/g, ".");
+      state.value = parseFloat(cleanVal) || 0;
+      updateAll(root);
+    });
+  });
+
+  $("#oz-price").addEventListener("input", (e) => {
+    handleInputFormat(e, () => {
+      const cleanVal = toEnDigits(e.target.value)
+        .replace(/,/g, "")
+        .replace(/٫/g, ".");
+      state.oz = parseFloat(cleanVal) || null;
+      updateAll(root);
+    });
+  });
+
+  $("#usd-rate").addEventListener("input", (e) => {
+    handleInputFormat(e, () => {
+      const cleanVal = toEnDigits(e.target.value)
+        .replace(/,/g, "")
+        .replace(/٫/g, ".");
+      state.usd = parseFloat(cleanVal) || null;
+      updateAll(root);
+    });
   });
 
   $("#purity-range").addEventListener("input", (e) => {
@@ -276,20 +325,10 @@ function bindEvents(root, prices, unitAutocomplete) {
     updateAll(root);
   });
 
-  $("#oz-price").addEventListener("input", (e) => {
-    state.oz = parseFloat(e.target.value) || null;
-    updateAll(root);
-  });
-
-  $("#usd-rate").addEventListener("input", (e) => {
-    state.usd = parseFloat(e.target.value) || null;
-    updateAll(root);
-  });
-
   $("#reset-oz")?.addEventListener("click", () => {
     if (prices?.oz) {
       state.oz = prices.oz;
-      $("#oz-price").value = prices.oz;
+      $("#oz-price").value = formatNumberField(prices.oz);
       updateAll(root);
     }
   });
@@ -297,7 +336,7 @@ function bindEvents(root, prices, unitAutocomplete) {
   $("#reset-usd")?.addEventListener("click", () => {
     if (prices?.usd) {
       state.usd = prices.usd;
-      $("#usd-rate").value = prices.usd;
+      $("#usd-rate").value = formatNumberField(prices.usd);
       updateAll(root);
     }
   });
@@ -344,12 +383,8 @@ function updateAll(root) {
     if (item.value === state.unit) return "";
 
     return `
-      <div
-        class="bg-surface rounded-xl shadow-sm border border-border p-4 flex items-center gap-4 hover:shadow-md transition-shadow group"
-      >
-        <div
-          class="bg-surface-2 text-secondary p-3 rounded-lg group-hover:bg-brand/10 group-hover:text-brand transition-colors flex items-center"
-        >
+      <div class="bg-surface rounded-xl shadow-sm border border-border p-4 flex items-center gap-4 hover:shadow-md transition-shadow group">
+        <div class="bg-surface-2 text-secondary p-3 rounded-lg group-hover:bg-brand/10 group-hover:text-brand transition-colors flex items-center">
           <i class="${item.icon} text-xl"></i>
         </div>
         <div>
@@ -383,18 +418,17 @@ function updateAll(root) {
 
     const fillColor = "#4f46e5";
 
-    purityRange.style.background = `linear-gradient(to left, ${fillColor}
-    ${percentage}%, var(--color-surface-3) ${percentage}%)`;
+    purityRange.style.background = `linear-gradient(to left, ${fillColor} ${percentage}%, var(--color-surface-3) ${percentage}%)`;
     purityRange.style.setProperty("--tw-ring-color", fillColor);
   }
 
   if (state.oz && state.usd) {
     const fair24 = theoreticalGram24(state.oz, state.usd);
     const fairSelected = fair24 * (state.karat / 24);
-    $("#valuation-gram").textContent = `${faNum(fairSelected, 0)} تومان`;
+    $("#valuation-gram").textContent = `${faNum(fairSelected, 0)} ریال`;
 
     const mazanehPrice = mazaneh(state.oz, state.usd);
-    $("#valuation-mazaneh").textContent = `${faNum(mazanehPrice, 0)} تومان`;
+    $("#valuation-mazaneh").textContent = `${faNum(mazanehPrice, 0)} ریال`;
   } else {
     $("#valuation-gram").textContent = "—";
     $("#valuation-mazaneh").textContent = "—";

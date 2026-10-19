@@ -26,3 +26,27 @@ export function faUnit(value, unit) {
 
   return `${faNum(value, digits)} ${map[unit] ?? unit}`;
 }
+
+export function toEnDigits(str) {
+  if (!str) return "";
+  return str
+    .replace(/[۰-۹]/g, (d) => String.fromCharCode(d.charCodeAt(0) - 1728))
+    .replace(/[٠-٩]/g, (d) => String.fromCharCode(d.charCodeAt(0) - 1584));
+}
+
+export function formatNumberField(value) {
+  if (!value) return "";
+  let str = String(value).replace(/,/g, "").trim();
+
+  const parts = str.split(/[.٫]/);
+
+  let integerPart = "";
+  if (parts[0]) {
+    const num = Number(parts[0]);
+    integerPart = isNaN(num) ? "" : num.toLocaleString("en-US");
+  }
+
+  let decimalPart = parts.length > 1 ? "٫" + parts[1] : "";
+
+  return integerPart + decimalPart;
+}

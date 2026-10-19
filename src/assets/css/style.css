@@ -172,12 +172,6 @@ body {
     border-color 0.3s ease;
 }
 
-input,
-select,
-textarea {
-  font-family: "Roboto Condensed", "IranYekanRegular", sans-serif;
-}
-
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
