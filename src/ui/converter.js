@@ -7,7 +7,7 @@ import {
   toGram,
 } from "../core/calculators.js";
 
-import { AutocompleteComponent } from "../components/ui/autocomplete.component.js";
+import { AutocompleteComponent } from "../components/autocomplete.component.js";
 import { fetchLivePrices } from "../services/api.js";
 
 const UNIT_ITEMS = [
@@ -49,7 +49,7 @@ export async function renderConverter(root) {
         class="flex items-center justify-between bg-surface p-5 rounded-2xl shadow-sm border border-border"
       >
         <div class="flex items-center gap-3">
-          <div class="bg-brand/10 text-brand p-2.5 rounded-xl">
+          <div class="bg-brand/10 text-brand p-2.5 rounded-xl flex items-center">
             <i class="ti ti-arrows-exchange text-2xl"></i>
           </div>
           <h2 class="text-xl font-bold text-primary">تبدیل واحد طلا</h2>
@@ -60,13 +60,13 @@ export async function renderConverter(root) {
         >
           <button
             data-mode="karat"
-            class="px-4 py-1.5 rounded-lg bg-surface shadow-sm text-brand font-bold text-sm cursor-pointer transition-all"
+            class="px-4 py-1.5 rounded-lg bg-surface shadow-sm text-brand font-bold text-sm cursor-pointer transition-all flex items-center"
           >
             عیار
           </button>
           <button
             data-mode="fineness"
-            class="px-4 py-1.5 rounded-lg text-secondary font-medium text-sm cursor-pointer hover:text-primary transition-all"
+            class="px-4 py-1.5 rounded-lg text-secondary font-medium text-sm cursor-pointer hover:text-primary transition-all flex items-center"
           >
             خلوص
           </button>
@@ -77,7 +77,7 @@ export async function renderConverter(root) {
         class="bg-surface rounded-2xl shadow-sm border border-border p-6 grid gap-6 md:grid-cols-2"
       >
         <label class="block">
-          <span class="text-sm font-semibold text-secondary mb-2 block"
+          <span class="mb-1.5 ps-3 flex flex-row text-xs font-semibold text-secondary"
             >مقدار</span
           >
           <div class="relative">
@@ -87,18 +87,15 @@ export async function renderConverter(root) {
               value="1"
               min="0"
               step="any"
-              class="w-full border border-border rounded-xl p-3 ps-10 bg-surface-2 focus:bg-surface focus:ring-2 focus:ring-brand/30 focus:border-brand transition-all outline-none text-primary font-medium"
+              class="h-11 w-full border border-border rounded-xl p-1.75 ps-10 bg-surface-2 focus:ring-2 focus:ring-brand/30 focus:border-brand transition-all outline-none text-primary font-medium"
             />
             <i
-              class="ti ti-math-function absolute left-3 top-1/2 -translate-y-1/2 text-secondary text-lg"
+              class="ti ti-math-function absolute right-3 top-1/2 -translate-y-1/2 text-secondary text-lg"
             ></i>
           </div>
         </label>
 
         <div class="block">
-          <span class="text-sm font-semibold text-secondary mb-2 block"
-            >واحد مبدأ</span
-          >
           <div id="unit-autocomplete-container"></div>
         </div>
 
@@ -124,7 +121,7 @@ export async function renderConverter(root) {
           >
           <span
             id="purity-label"
-            class="font-bold text-brand text-lg"
+            class="font-bold text-brand text-lg font-['IranYekanRegular']"
             >۱۸K</span
           >
         </div>
@@ -208,7 +205,7 @@ export async function renderConverter(root) {
           >
             <div class="absolute top-0 right-0 w-1 h-full bg-purple-500"></div>
             <p class="text-sm font-medium text-secondary mb-1">
-              قیمت مظنه (مثقال ۱۷ عیار):
+              قیمت مظنه (۱ مثقال طلای ۱۷ عیار):
             </p>
             <p
               id="valuation-mazaneh"
@@ -246,9 +243,9 @@ export async function renderConverter(root) {
       placeholder: "جستجوی واحد...",
       itemTitle: "title",
       itemValue: "value",
+      label: "واحد مبدأ",
       itemIcon: "icon",
       clearable: false,
-      label: "",
       containerClass:
         "border border-border rounded-xl bg-surface-2 text-primary font-medium focus-within:ring-2 focus-within:ring-brand/30 focus-within:border-brand transition-all",
       inputClass: "text-primary bg-transparent",
@@ -317,8 +314,8 @@ function bindEvents(root, prices, unitAutocomplete) {
       root.querySelectorAll("#purity-mode-switch button").forEach((b) => {
         const active = b.dataset.mode === state.purityMode;
         b.className = active
-          ? "px-4 py-1.5 rounded-lg bg-surface shadow-sm text-brand font-bold text-sm cursor-pointer transition-all"
-          : "px-4 py-1.5 rounded-lg text-secondary font-medium text-sm cursor-pointer hover:text-primary transition-all";
+          ? "px-4 py-1.5 rounded-lg bg-surface shadow-sm text-brand font-bold text-sm cursor-pointer transition-all flex items-center"
+          : "px-4 py-1.5 rounded-lg text-secondary font-medium text-sm cursor-pointer hover:text-primary transition-all flex items-center";
       });
 
       const rangeTitle = $("#range-title");
@@ -347,13 +344,21 @@ function updateAll(root) {
     if (item.value === state.unit) return "";
 
     return `
-      <div class="bg-surface rounded-xl shadow-sm border border-border p-4 flex items-center gap-4 hover:shadow-md transition-shadow group">
-        <div class="bg-surface-2 text-secondary p-3 rounded-lg group-hover:bg-brand/10 group-hover:text-brand transition-colors">
+      <div
+        class="bg-surface rounded-xl shadow-sm border border-border p-4 flex items-center gap-4 hover:shadow-md transition-shadow group"
+      >
+        <div
+          class="bg-surface-2 text-secondary p-3 rounded-lg group-hover:bg-brand/10 group-hover:text-brand transition-colors flex items-center"
+        >
           <i class="${item.icon} text-xl"></i>
         </div>
         <div>
-          <div class="text-xs font-medium text-secondary mb-0.5">${item.title}</div>
-          <div class="text-lg font-bold text-color">${faUnit(fromGram(gram, item.value), item.value)}</div>
+          <div class="text-xs font-medium text-secondary mb-0.5">
+            ${item.title}
+          </div>
+          <div dir="ltr" class="text-lg text-right font-bold text-color">
+            ${faUnit(fromGram(gram, item.value), item.value)}
+          </div>
         </div>
       </div>
     `;
@@ -378,7 +383,8 @@ function updateAll(root) {
 
     const fillColor = "#4f46e5";
 
-    purityRange.style.background = `linear-gradient(to left, ${fillColor} ${percentage}%, var(--color-surface-3) ${percentage}%)`;
+    purityRange.style.background = `linear-gradient(to left, ${fillColor}
+    ${percentage}%, var(--color-surface-3) ${percentage}%)`;
     purityRange.style.setProperty("--tw-ring-color", fillColor);
   }
 

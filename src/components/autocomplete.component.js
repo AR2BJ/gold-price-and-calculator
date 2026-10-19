@@ -85,12 +85,12 @@ export class AutocompleteComponent {
 
     this.container.innerHTML = `
       <div class="relative flex flex-col justify-center items-stretch gap-1">
-        <div class="flex ${this.options.isRow ? "flex-row-reverse" : "flex-col"} justify-center items-stretch">
+        <div class="flex ${this.options.isRow ? "flex-row" : "flex-col"} justify-center items-stretch">
           ${
             this.options.label
               ? ` <label
                   for="autocomplete-input-${uuid}"
-                  class="${this.options.isRow ? "pe-2 hidden sm:flex flex-row-reverse justify-center items-center" : "mb-1.5 ps-3 flex flex-row-reverse justify-start items-center"} text-xs font-semibold text-secondary"
+                  class="${this.options.isRow ? "pe-2 hidden sm:flex flex-row justify-center items-center" : "mb-1.5 ps-3 flex flex-row justify-start items-center"} text-xs font-semibold text-secondary"
                 >
                   ${this.options.label}${this.options.isRow ? ":" : ""}
                 </label>`
@@ -100,7 +100,7 @@ export class AutocompleteComponent {
             id="autocomplete-container-${uuid}"
             class="${
               this.options.containerClass
-            } relative min-h-10 w-full flex flex-row-reverse flex-wrap items-center content-start gap-1.5 rounded-xl border border-border bg-surface-2 p-1.75 pe-10 transition group cursor-pointer text-sm text-color placeholder:text-secondary/70 focus-within:border-brand/80 focus-within:outline-none"
+            } relative min-h-10 w-full flex flex-row flex-wrap items-center content-start gap-1.5 rounded-xl border border-border bg-surface-2 p-1.75 pe-10 transition group cursor-pointer text-sm text-color placeholder:text-secondary/70 focus-within:border-brand/80 focus-within:outline-none"
           >
             <div
               id="autocomplete-chips-${uuid}"

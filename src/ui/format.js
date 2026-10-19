@@ -10,17 +10,16 @@ export function faNum(value, digits = 0) {
 
 export function faUnit(value, unit) {
   const map = {
-    gram: "گرم",
-    oz_troy: "اونس تروآ",
-    oz_avoir: "اونس معمولی",
-    mesghal: "مثقال",
-    mazaneh: "مظنه",
-    soot: "سوت",
-    carat_weight: "قیراط",
+    gram: "g",
+    oz_troy: "ozt",
+    oz_avoir: "oz",
+    mesghal: "mes",
+    mazaneh: "maz",
+    soot: "s",
+    carat_weight: "car",
   };
 
-  // تعیین تعداد اعشار بر اساس واحد برای دقت بالاتر
-  let digits = 4; // پیش‌فرض
+  let digits = 4;
   if (unit === "gram") digits = 4;
   if (unit === "oz_troy" || unit === "oz_avoir") digits = 5;
   if (unit === "soot") digits = 0;
